@@ -17,8 +17,22 @@ def age_from_date(date):
 class User:
     def __init__(self, first_name, last_name, phone, birth, role):
 
+        if not first_name[0].isupper():
+            raise ValueError("First name must start with capital letter")
+
+        if any(char.isdigit() for char in first_name):
+            raise ValueError("First name must only contain letters")
         self.first_name = first_name
+
+        if not last_name[0].isupper():
+            raise ValueError("Last name must start with capital letter")
+
+        if any(char.isdigit() for char in last_name):
+            raise ValueError("Last name must only contain letters")
         self.last_name = last_name
+
+        if not isinstance(role, UserRole):
+            raise ValueError("Invalid role")
         self.role = role
 
         if not isinstance(phone, int):
@@ -26,16 +40,16 @@ class User:
 
         if not len(str(phone)) == 9:
             raise ValueError("Phone number is too short")
-
         self.phone = phone
 
         if not isinstance(birth, datetime.date):
-            raise ValueError(f"Invalid birth format: {birth}")
+            raise ValueError("Invalid birth date")
         self.birth = birth
-        if age_from_date(birth) < 10:
-            raise ValueError("You are to young to rent movies.")
 
-        self.register_date = datetime.datetime.now()
+        if age_from_date(birth) < 10:
+            raise ValueError("You are too young to rent movies")
+
+        self.register_date = datetime.date.today()
         self.rented_movies = []
         self.all_rented_movies = []
         self.active = True
