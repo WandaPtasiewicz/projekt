@@ -1,7 +1,7 @@
 import datetime
 import json
 from enum import Enum, auto
-from user import age_from_date
+from MovieRentalShop.src.user import age_from_date
 
 
 class MovieGenre(Enum):
@@ -19,9 +19,21 @@ class Movie:
     def __init__(self,id , title, director, release_year, genre, age_limit = 0):
 
         self.id =id
+
+        if not title[0].isupper():
+            raise ValueError("Title mast start with capital letter")
+
         self.title = title
         self.director = director
+
+        if not isinstance(genre, MovieGenre):
+            raise ValueError("Invalid genre")
+
         self.genre = genre
+
+        if age_limit < 0 :
+            raise ValueError("Age limit can't less than 0")
+
         self.age_limit = age_limit
 
         if not isinstance(release_year, int) or release_year < 1888 or release_year > datetime.datetime.now().year:

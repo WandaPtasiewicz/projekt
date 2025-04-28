@@ -21,8 +21,11 @@ class User:
         self.last_name = last_name
         self.role = role
 
-        if not(isinstance(phone, int) and len(str(phone)) == 9 ):
-            raise ValueError(f"Invalid phone format: {phone}")
+        if not isinstance(phone, int):
+            raise ValueError("Phone number must only contain numbers")
+
+        if not len(str(phone)) == 9:
+            raise ValueError("Phone number is too short")
 
         self.phone = phone
 
