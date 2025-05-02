@@ -47,10 +47,10 @@ class Movie:
 
     def rent_movie(self, user):
         if not self.available:
-            raise ValueError(f"Movie '{self.title}' is already rented.")
+            raise ValueError("This movie is already rented")
 
         if age_from_date(user.birth) < self.age_limit:
-            raise ValueError("You are too young to rent this movie.")
+            raise ValueError("You are too young to rent this movie")
 
         self.available = False
         self.rent_date = datetime.datetime.now()
@@ -58,7 +58,7 @@ class Movie:
 
     def return_movie(self):
         if self.available:
-            raise ValueError(f"Movie '{self.title}' is already available.")
+            raise ValueError("This movie is already returned")
 
         self.available = True
         self.rent_date = None

@@ -1,91 +1,64 @@
 import datetime
 
-from user import User
-
+from MovieRentalShop.src.user import User
+from MovieRentalShop.src.movie import Movie
 
 class MovieRentalShop:
     def __init__(self, name, location):
 
         self.name = name
         self.location = location
-        self.movies = {}
-        self.users = {}
-        self.creation_date = datetime.datetime.now()
+        self.movies = list()
+        self.users = list()
+        self.creation_date = datetime.date.today()
 
-    def add_movie(self, movie):
-        if movie.id in self.movies:
-            raise ValueError("Movie with this is is already in the shop")
+    def add_movie(self, new_movie):
+        if any(movie.id == new_movie.id for movie in self.movies):
+            raise ValueError("Movie with this id is already in the shop")
 
-        self.movies[movie.id] = movie
+        self.movies.append(new_movie)
 
-    def remove_movie(self, id):
-        if id not in self.movies:
-            raise ValueError("Movie not found in the shop")
+    def remove_movie(self, movie):
+        if movie not in self.movies:
+            raise ValueError("Movie not found")
 
-        movie = self.movies[id]
         if not movie.available:
-            raise ValueError(f"Cannot remove movie '{movie.title}' as it is currently rented")
+            raise ValueError("This movie is rented right now")
 
-        return self.movies.pop(id)
+        return self.movies.remove(movie)
 
-    def find_movie_by_id(self, id):
-        if id not in self.movies:
-            raise ValueError(f"Movie with {id} not found.")
-        return self.movies.get(id)
+    def remove_user(self, user):
+        if user not in self.users:
+            raise ValueError("User not found")
 
-    def find_movie_by_title(self, title):
-        movies = [movie for movie in self.movies.values() if title.lower() in movie.title.lower()]
-        if not movies:
-            raise ValueError(f"Movie '{title}' not found.")
-        return movies
+        if user.active:
+            raise ValueError("Cannot remove active account")
 
-    def find_movies_by_genre(self, genre):
-        movies = [movie for movie in self.movies.values() if genre in movie.genre]
-        if not movies:
-            raise ValueError(f"Movie from '{genre}' not found.")
-        return movies
-
-    def find_movies_by_director(self, director):
-        movies = [movie for movie in self.movies.values() if director.lower() in movie.director.lower()]
-        if not movies:
-            raise ValueError(f"Movie directed by '{director}' not found.")
-        return movies
+        return self.users.remove(user)
 
     def add_user(self, new_user):
         if not isinstance(new_user, User):
-            raise ValueError("User not found")
-        if new_user.phone in self.users:
-            raise ValueError(f"User {new_user} is already in system.")
-        self.users[new_user.phone] = new_user
-        return True
+            raise ValueError("Invalid data")
+        if new_user in self.users:
+            raise ValueError("This user is already in system")
+        if any(user.phone == new_user.phone for user in self.users):
+            raise ValueError("This phone number is already in use")
+        self.users.append(new_user)
 
-    def find_user_by_phone(self, phone):
-        if phone not in self.users:
-            raise ValueError("User not found")
-        return self.users.get(phone)
+    def find_movie_by_id(self, movie_id):
+        for movie in self.movies:
+            if movie.id == movie_id:
+                return movie
+        raise ValueError("Movie not found")
 
-    def find_users_by_first_name(self, first_name):
-        users = [user for user in self.users.values() if first_name.lower() in user.first_name.lower()]
-        if not users:
-            raise ValueError("User not found.")
-        return users
+    def find_movie_by_title(self, movie_title):
+        find_movies = [movie for movie in self.movies if movie.title == movie_title]
+        if not find_movies:
+            raise ValueError ("Movie not found")
+        return find_movies
 
-    def find_users_by_last_name(self, last_name):
-        users = [user for user in self.users.values() if last_name.lower() in user.last_name.lower()]
-        if not users:
-            raise ValueError("User not found.")
-        return users
-
-    def find_users_by_role(self, role):
-        users = [user for user in self.users.values() if role in user.role]
-        if not users:
-            raise ValueError("User not found.")
-        return users
     def all_movies(self):
-        for movie_id, movie in self.movies.items():
-            print(f"id: {movie_id}, title: {movie.title}, release year: {movie.release_year}, director: {movie.director}")
+        return self.movies
 
-    def all_users(self) -> object:
-        for user_phone, user in self.users.items():
-            print(f"phone: {user_phone}, first name: {user.first_name},last name: {user.last_name}, birth: {user.birth},"
-                  f" role: {user.role} ")
+    def all_users(self) :
+        return self.users

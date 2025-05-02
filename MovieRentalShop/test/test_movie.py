@@ -50,7 +50,6 @@ class TestMovie(unittest.TestCase):
 
     def test_error_movie_is_rented(self):
         self.valid_movie.rent_movie(self.test_user)
-
         with self.assertRaises(ValueError):
             self.valid_movie.rent_movie(self.test_user)
 

@@ -7,7 +7,6 @@ class UserRole(Enum):
     EMPLOYEE= auto()
     ADMIN = auto()
 
-
 def age_from_date(date):
     age = datetime.datetime.now().year - date.year
     if (datetime.datetime.now().month, datetime.datetime.now().day) < (date.month, date.day):
@@ -59,7 +58,7 @@ class User:
             raise ValueError("Your account has been deactivated")
 
         if movie in self.rented_movies:
-            raise ValueError(f"You already rented {movie}")
+            raise ValueError("You already rented this movie")
 
         movie.rent_movie(self)
         self.rented_movies.append(movie)
@@ -68,12 +67,12 @@ class User:
 
     def return_movie(self, movie):
         if not self.active:
-            raise ValueError("Your account has been unactivated")
+            raise ValueError("Your account has been deactivated")
 
         if movie not in self.rented_movies:
-            raise ValueError(f"You already returned {movie}")
+            raise ValueError("You already returned this movie")
 
-        movie.return_movie(self)
+        movie.return_movie()
         self.rented_movies.remove(movie)
 
     def deactivate(self):

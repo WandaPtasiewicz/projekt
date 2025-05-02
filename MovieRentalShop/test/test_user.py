@@ -90,13 +90,53 @@ class TestUser(unittest.TestCase):
         self.assertIn(self.test_movie, self.valid_user.rented_movies)
 
     def test_error_rent_movie_already_rented(self):
-        pass
+        self.test_movie.available = False
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.rent_movie(self.test_movie)
+        self.assertEqual(str(context.exception), "This movie is already rented")
 
     def test_error_rent_movie_too_young_user(self):
-        pass
+        self.test_movie.age_limit = 18
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.rent_movie(self.test_movie)
+        self.assertEqual(str(context.exception), "You are too young to rent this movie")
 
     def test_error_rent_movie_inactive_user(self):
-        pass
+        self.valid_user.active = False
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.rent_movie(self.test_movie)
+        self.assertEqual(str(context.exception), "Your account has been deactivated")
+
+    def test_error_rent_rented_movie(self):
+        self.valid_user.rent_movie(self.test_movie)
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.rent_movie(self.test_movie)
+        self.assertEqual(str(context.exception),"You already rented this movie")
+
+    def test_error_return_returned_movie(self):
+        self.valid_user.rent_movie(self.test_movie)
+        self.valid_user.return_movie(self.test_movie)
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.return_movie(self.test_movie)
+        self.assertEqual(str(context.exception),"You already returned this movie")
+
+    def test_return_movie_positive(self):
+        self.valid_user.rent_movie(self.test_movie)
+        self.valid_user.return_movie(self.test_movie)
+        self.assertTrue(self.test_movie.available)
+        self.assertEqual(self.test_movie.rented_by, None)
+        self.assertIsNone(self.test_movie.rent_date)
+        self.assertNotIn(self.test_movie, self.valid_user.rented_movies)
+
+    def test_error_deactivate_user_with_rented_movie(self):
+        self.valid_user.rent_movie(self.test_movie)
+        with self.assertRaises(ValueError) as context:
+            self.valid_user.deactivate()
+        self.assertEqual(str(context.exception), "Cannot deactivate user with rented movies")
+
+    def test_deactivate_user_positive(self):
+        self.valid_user.deactivate()
+        self.assertFalse(self.valid_user.active)
 
     def tearDown(self):
         pass
